@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { assets } from "../assets/assets";
 import { AdminContext } from "../context/AdminContext";
-import { DoctorContext } from "../context/DoctorContext"; // Import DoctorContext
+import { DoctorContext } from "../context/DoctorContext";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { aToken, setAToken } = useContext(AdminContext);
-  const { dToken, setDToken } = useContext(DoctorContext); // Use DoctorContext
+  const { dToken, setDToken } = useContext(DoctorContext);
   const navigate = useNavigate();
 
   const logout = () => {
@@ -18,7 +18,7 @@ const Navbar = () => {
       setDToken("");
       localStorage.removeItem("dToken");
     }
-    navigate("/"); // Move navigate outside of the conditions to always redirect
+    navigate("/");
   };
 
   return (

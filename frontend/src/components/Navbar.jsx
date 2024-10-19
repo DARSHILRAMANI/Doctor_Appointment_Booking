@@ -8,18 +8,17 @@ const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { token, setToken, userData } = useContext(AppContext);
 
-  // Check if the user is logged in by checking localStorage for a token
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
-      setToken(storedToken); // Update token state from local storage
+      setToken(storedToken);
     }
   }, [setToken]);
 
   const logOut = () => {
-    setToken(null); // Clear token in state
-    localStorage.removeItem("token"); // Remove token from local storage
-    navigate("/login"); // Redirect to login page after logout
+    setToken(null);
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
@@ -72,10 +71,7 @@ const Navbar = () => {
                 >
                   My Appointments
                 </p>
-                <p
-                  onClick={logOut} // Correctly invoke the logout function
-                  className="hover:text-black cursor-pointer"
-                >
+                <p onClick={logOut} className="hover:text-black cursor-pointer">
                   Log Out
                 </p>
               </div>

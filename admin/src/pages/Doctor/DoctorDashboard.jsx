@@ -1,4 +1,3 @@
-// export default DoctorDashboard;
 import React, { useContext, useEffect } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
 import { assets } from "../../assets/assets";

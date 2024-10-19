@@ -72,43 +72,43 @@ h2 {
 }
 
 .button-pay {
-    background-color: #28a745; /* Green for pay */
+    background-color: #28a745;
     color: white;
 }
 
 .button-pay:hover {
-    background-color: #218838; /* Darker green */
+    background-color: #218838;
     transform: translateY(-2px);
 }
 
 .button-cancel {
-    background-color: #dc3545; /* Red for cancel */
+    background-color: #dc3545; 
     color: white;
 }
 
 .button-cancel:hover {
-    background-color: #c82333; /* Darker red */
+    background-color: #c82333;
     transform: translateY(-2px);
 }
 
 .button-completed {
-    background-color: #007bff; /* Blue for completed */
+    background-color: #007bff;
     color: white;
     cursor: not-allowed;
 }
 
 .button-completed:hover {
-    background-color: #0069d9; /* Darker blue */
+    background-color: #0069d9; 
 }
 
 .button-cancelled {
-    background-color: #ffc107; /* Yellow for paid */
+    background-color: #ffc107;
     color: white;
     cursor: not-allowed;
 }
 
 .button-cancelled:hover {
-    background-color: #e0a800; /* Darker yellow */
+    background-color: #e0a800; 
 }
 
 @media (max-width: 768px) {
@@ -119,6 +119,6 @@ h2 {
 
     .button-container {
         align-items: stretch;
-        width: 100%; /* Full width for buttons */
+        width: 100%; 
     }
 }

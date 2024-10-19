@@ -147,7 +147,7 @@ const DoctorProfile = () => {
                     isEdit &&
                     setProfileData((prev) => ({
                       ...prev,
-                      available: !prev.available, // Use prev.available
+                      available: !prev.available,
                     }))
                   }
                   checked={profileData.available}
@@ -163,7 +163,7 @@ const DoctorProfile = () => {
                 {isEdit ? (
                   <button
                     onClick={() => {
-                      updateProfile(); // Call the updateProfile function
+                      updateProfile();
                     }}
                     className="mt-6 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition-all shadow-md"
                   >

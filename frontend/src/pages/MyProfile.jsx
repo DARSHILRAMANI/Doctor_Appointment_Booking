@@ -9,12 +9,11 @@ import "./MyProfile.css";
 const MyProfile = () => {
   const { userData, setUserData, token, backendUrl, loadUserProfileData } =
     useContext(AppContext);
-  const [isEdit, setIsEdit] = useState(false); // Toggle for edit mode
+  const [isEdit, setIsEdit] = useState(false);
   const [tempUserData, setTempUserData] = useState({ ...userData });
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Function to handle saving the updated profile data
   const updateUserProfileData = async () => {
     try {
       setLoading(true);
@@ -26,7 +25,7 @@ const MyProfile = () => {
       formData.append("dob", tempUserData.dob);
 
       if (image) {
-        formData.append("image", image); // Append image if a new one is selected
+        formData.append("image", image);
       }
 
       const { data } = await axios.post(
@@ -41,10 +40,10 @@ const MyProfile = () => {
 
       if (data.success) {
         toast.success(data.message);
-        await loadUserProfileData(); // Reload updated data
-        setUserData(tempUserData); // Reflect new data in the state
-        setIsEdit(false); // Disable edit mode
-        setImage(null); // Reset image
+        await loadUserProfileData();
+        setUserData(tempUserData);
+        setIsEdit(false);
+        setImage(null);
         window.location.reload();
         window.location.reload();
       } else {
@@ -57,17 +56,15 @@ const MyProfile = () => {
     }
   };
 
-  // Handle switching to edit mode
   const handleEdit = () => {
-    setTempUserData({ ...userData }); // Start with the current data in the form
-    setIsEdit(true); // Enable edit mode
+    setTempUserData({ ...userData });
+    setIsEdit(true);
   };
 
-  // Handle switching back to view mode without saving
   const handleCancel = () => {
-    setTempUserData({ ...userData }); // Reset any changes made
-    setIsEdit(false); // Exit edit mode
-    setImage(null); // Reset image state
+    setTempUserData({ ...userData });
+    setIsEdit(false);
+    setImage(null);
   };
 
   return (

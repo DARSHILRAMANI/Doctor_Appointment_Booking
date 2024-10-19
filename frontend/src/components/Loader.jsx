@@ -1,4 +1,3 @@
-// src/components/Loader.js
 import React from "react";
 
 const Loader = () => {

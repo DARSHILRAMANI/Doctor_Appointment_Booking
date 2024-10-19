@@ -5,14 +5,14 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
-import nodemailer from "nodemailer"; // Use import instead of require
-import crypto from "crypto"; // Import once
+import nodemailer from "nodemailer";
+import crypto from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const handleError = (res, error) => {
-  console.error(error); // Log the error for debugging
+  console.error(error);
   res.status(500).json({
     success: false,
     message: "An error occurred",
@@ -20,7 +20,6 @@ const handleError = (res, error) => {
   });
 };
 
-// API to register user
 const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -42,7 +41,6 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // Check if the user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -64,7 +62,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// API for user login
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -94,7 +91,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-// API to get user profile data
 const getProfile = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -118,7 +114,6 @@ const getProfile = async (req, res) => {
   }
 };
 
-// API to update user profile
 const updateProfile = async (req, res) => {
   try {
     const { userId, name, phone, address, dob, gender } = req.body;
@@ -136,7 +131,6 @@ const updateProfile = async (req, res) => {
       gender,
     };
 
-    // Upload profile image if provided
     if (imageFile) {
       const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
         resource_type: "image",
@@ -154,7 +148,6 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// API to book appointment
 const bookAppointment = async (req, res) => {
   try {
     const { userId, docId, slotDate, slotTime } = req.body;
@@ -168,7 +161,6 @@ const bookAppointment = async (req, res) => {
 
     let slotsBooked = docData.slots_booked || {};
 
-    // Check if the slot is available
     if (slotsBooked[slotDate]) {
       if (slotsBooked[slotDate].includes(slotTime)) {
         return res
@@ -196,7 +188,6 @@ const bookAppointment = async (req, res) => {
     const newAppointment = new appointmentModel(appointmentData);
     await newAppointment.save();
 
-    // Save new slots data in doctor data
     await doctorModel.findByIdAndUpdate(docId, { slots_booked: slotsBooked });
 
     res
@@ -207,7 +198,6 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-// API to get user appointments
 const listAppointment = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -219,13 +209,11 @@ const listAppointment = async (req, res) => {
   }
 };
 
-// API to cancel appointment
 const cancelAppointment = async (req, res) => {
   try {
     const { userId, appointmentId } = req.body;
 
     const appointmentData = await appointmentModel.findById(appointmentId);
-    // Verify user
     if (appointmentData.userId.toString() !== userId.toString()) {
       return res
         .status(403)
@@ -235,7 +223,6 @@ const cancelAppointment = async (req, res) => {
       cancelled: true,
     });
 
-    // Realizing doctor slot
     const { docId, slotDate, slotTime } = appointmentData;
     const doctorData = await doctorModel.findById(docId);
     let slots_booked = doctorData.slots_booked;
@@ -280,7 +267,6 @@ const sendForgotPasswordOtp = async (req, res) => {
         .json({ success: false, message: "Email is required" });
     }
 
-    // Find the user
     const user = await userModel.findOne({ email });
     if (!user) {
       return res
@@ -288,11 +274,9 @@ const sendForgotPasswordOtp = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    // Generate OTP and save it
     const otp = crypto.randomInt(100000, 999999).toString();
     otpStore[email] = { otp, expires: Date.now() + 10 * 60 * 1000 };
 
-    // Send OTP email
     await sendOtpEmail(email, otp);
     res.status(200).json({ success: true, message: "OTP sent to your email" });
   } catch (error) {
@@ -300,7 +284,6 @@ const sendForgotPasswordOtp = async (req, res) => {
   }
 };
 
-// API to reset password using OTP
 const resetPasswordWithOtp = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
@@ -311,18 +294,16 @@ const resetPasswordWithOtp = async (req, res) => {
       });
     }
 
-    // Validate OTP
     const storedData = otpStore[email];
     if (!storedData || storedData.otp !== otp) {
       return res.status(400).json({ success: false, message: "Invalid OTP" });
     }
 
     if (Date.now() > storedData.expires) {
-      delete otpStore[email]; // Remove expired OTP
+      delete otpStore[email];
       return res.status(400).json({ success: false, message: "OTP expired" });
     }
 
-    // Hash new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
@@ -340,7 +321,6 @@ const resetPasswordWithOtp = async (req, res) => {
 const sendWelcomeEmail = async (req, res) => {
   const { email, message } = req.body;
 
-  // Create a transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -349,9 +329,8 @@ const sendWelcomeEmail = async (req, res) => {
     },
   });
 
-  // Email options
   const mailOptions = {
-    from: '"Precipto@gmail.com', // sender address
+    from: '"Precipto@gmail.com',
     to: email,
     subject: "Welcome to Precipto",
     text: message,
@@ -366,181 +345,7 @@ const sendWelcomeEmail = async (req, res) => {
   }
 };
 
-// import { PDFDocument, rgb } from "pdf-lib";
-// import fs from "fs";
-// import path from "path";
-
-// const generatePDF = async ({ paymentId, userName, amount, appointmentId }) => {
-//   const doc = new PDFDocument();
-//   const pdfPath = path.join(__dirname, `payment_${paymentId}.pdf`);
-//   doc.pipe(fs.createWriteStream(pdfPath));
-
-//   doc.fontSize(25).text("Payment Confirmation", { align: "center" });
-//   doc.moveDown();
-//   doc.fontSize(16).text(`Dear ${userName},`);
-//   doc.moveDown();
-//   doc.text(
-//     `Your payment of INR ${amount} was successful for Appointment ID: ${appointmentId}.`
-//   );
-//   doc.text(`Payment ID: ${paymentId}.`);
-//   doc.moveDown();
-//   doc.text("Thank you for your payment!");
-
-//   doc.end();
-
-//   return pdfPath;
-// };
-
-// const processPayment = async (req, res) => {
-//   try {
-//     const { paymentId, userName, amount, appointmentId, email } = req.body;
-
-//     // Validate required fields
-//     if (!paymentId || !userName || !amount || !appointmentId || !email) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "All fields are required.",
-//       });
-//     }
-
-//     // Generate PDF for payment confirmation
-//     const pdfPath = await generatePDF({
-//       paymentId,
-//       userName,
-//       amount,
-//       appointmentId,
-//     });
-//     console.log("PDF generated at:", pdfPath);
-
-//     // Send payment confirmation email with the PDF attachment
-//     try {
-//       await sendPaymentEmail(email, pdfPath, {
-//         userName,
-//         amount,
-//         appointmentId,
-//         paymentId,
-//       });
-//     } catch (emailError) {
-//       console.error("Error sending email:", emailError);
-//       return res.status(500).json({
-//         success: false,
-//         message: "Payment processed, but failed to send confirmation email.",
-//       });
-//     }
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Payment processed successfully, confirmation email sent!",
-//     });
-//   } catch (error) {
-//     console.error("Error processing payment:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "An error occurred while processing your payment.",
-//     });
-//   }
-// };
-// import { PDFDocument, rgb } from "pdf-lib";
-// import fs from "fs";
-// import path from "path";
-
-// // Function to generate the PDF document
-// const generatePDF = async ({ paymentId, userName, amount, appointmentId }) => {
-//   const pdfDoc = await PDFDocument.create();
-//   const page = pdfDoc.addPage([600, 400]);
-
-//   // Set title
-//   page.drawText("Payment Confirmation", {
-//     x: 50,
-//     y: 350,
-//     size: 25,
-//     color: rgb(0, 0, 0),
-//     textAlign: "center",
-//   });
-
-//   // Add user information
-//   page.drawText(`Dear ${userName},`, {
-//     x: 50,
-//     y: 300,
-//     size: 16,
-//     color: rgb(0, 0, 0),
-//   });
-//   page.drawText(
-//     `Your payment of INR ${amount} was successful for Appointment ID: ${appointmentId}.`,
-//     {
-//       x: 50,
-//       y: 270,
-//       size: 14,
-//       color: rgb(0, 0, 0),
-//     }
-//   );
-//   page.drawText(`Payment ID: ${paymentId}.`, {
-//     x: 50,
-//     y: 250,
-//     size: 14,
-//     color: rgb(0, 0, 0),
-//   });
-//   page.drawText("Thank you for your payment!", {
-//     x: 50,
-//     y: 220,
-//     size: 14,
-//     color: rgb(0, 0, 0),
-//   });
-
-//   // Save the PDF to a file
-//   const pdfBytes = await pdfDoc.save();
-//   const pdfPath = path.join(__dirname, `payment_${paymentId}.pdf`);
-//   fs.writeFileSync(pdfPath, pdfBytes);
-
-//   return pdfPath;
-// };
-
-// // Function to process payment and send confirmation email
-const processPayment = async (req, res) => {
-  // try {
-  //   const { paymentId, userName, amount, appointmentId, email } = req.body;
-  //   // Validate required fields
-  //   if (!paymentId || !userName || !amount || !appointmentId || !email) {
-  //     return res.status(400).json({
-  //       success: false,
-  //       message: "All fields are required.",
-  //     });
-  //   }
-  //   // Generate PDF for payment confirmation
-  //   const pdfPath = await generatePDF({
-  //     paymentId,
-  //     userName,
-  //     amount,
-  //     appointmentId,
-  //   });
-  //   console.log("PDF generated at:", pdfPath);
-  //   // Send payment confirmation email with the PDF attachment
-  //   try {
-  //     await sendPaymentEmail(email, pdfPath, {
-  //       userName,
-  //       amount,
-  //       appointmentId,
-  //       paymentId,
-  //     });
-  //   } catch (emailError) {
-  //     console.error("Error sending email:", emailError);
-  //     return res.status(500).json({
-  //       success: false,
-  //       message: "Payment processed, but failed to send confirmation email.",
-  //     });
-  //   }
-  //   res.status(200).json({
-  //     success: true,
-  //     message: "Payment processed successfully, confirmation email sent!",
-  //   });
-  // } catch (error) {
-  //   console.error("Error processing payment:", error);
-  //   res.status(500).json({
-  //     success: false,
-  //     message: "An error occurred while processing your payment.",
-  //   });
-  // }
-};
+const processPayment = async (req, res) => {};
 
 export {
   registerUser,

@@ -32,7 +32,7 @@ const AddDoctor = () => {
     formData.append("email", email);
     formData.append("password", password);
     formData.append("experience", experience);
-    formData.append("fees", Number(fees)); // Make sure to validate this
+    formData.append("fees", Number(fees));
     formData.append("about", about);
     formData.append("speciality", speciality);
     formData.append("degree", degree);
@@ -41,7 +41,6 @@ const AddDoctor = () => {
       JSON.stringify({ line1: address1, line2: address2 })
     );
 
-    // Log formData for debugging
     formData.forEach((value, key) => {
       console.log(`${key}: ${value}`);
     });
@@ -50,7 +49,7 @@ const AddDoctor = () => {
       const { data } = await axios.post(
         `${backendUrl}/api/admin/add-doctor`,
         formData,
-        { headers: { aToken } } // Ensure this is correct
+        { headers: { aToken } }
       );
 
       if (data.success) {

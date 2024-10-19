@@ -1,7 +1,6 @@
 import React from "react";
 import { assets } from "../assets/assets";
-import "./Contact.css"; // Import the CSS file
-
+import "./Contact.css";
 const Contact = () => {
   return (
     <div className="contact-container">
